@@ -9,9 +9,10 @@ var normName;
 var ranobeName;
 var coverUrl;
 var description;
-var name = "89042--the-crimson-dragon";
+var name = "51930--me-dragon";
 var chaptersAmount;
 
+var chaptersUrl = [];
 var chapters = [];
 var chapterNames = [];
 
@@ -51,7 +52,10 @@ async function getChaptersAmount(){
   await fetch(`https://api.lib.social/api/manga/${name}/chapters`)
     .then(res => res.json())
     .then(data => {
-      chaptersAmount = data.data.length;
+      data.data.forEach(i => {
+        chaptersUrl.push(`https://api.lib.social/api/manga/${name}/chapter?number=${i.number}&volume=${i.volume}`);
+      })
+      chaptersAmount = chaptersUrl.length;
     })
 }
 
@@ -60,7 +64,7 @@ function toParagraph(text){
 }
 
 function fetchContent(){
-  const url = `https://api.lib.social/api/manga/${name}/chapter?number=${i}&volume=1`;
+  const url = chaptersUrl[i]; 
   console.log(url)
   fetch(url)
     .then(res => res.json())
