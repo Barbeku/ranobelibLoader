@@ -1,2 +1,3 @@
 # зависимости
-- node.js
+- node js
+- info zip

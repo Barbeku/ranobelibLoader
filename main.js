@@ -9,7 +9,7 @@ var normName;
 var ranobeName;
 var coverUrl;
 var description;
-var name = "51930--me-dragon";
+var name = "38728--supreme-magus";
 var chaptersAmount;
 
 var chaptersUrl = [];
