@@ -1,8 +1,8 @@
 "use strict";
 
 const fs = require("fs");
+const https = require("https");
 
-//let name = "83851--white-dragon-lord";
 var normName;
 var ranobeName;
 var coverUrl;
@@ -22,6 +22,13 @@ async function main(){
   await getMainData();
   await getChaptersAmount();
   fetchContent();
+}
+
+function saveCover(url){
+  var file = fs.createWriteStream(`./${ranobeName}/OPS/images/cover.jpg`);
+  https.get(url, (res) => {
+    res.pipe(file);
+  })
 }
 
 async function getMainData(){
@@ -80,6 +87,8 @@ function endFetch(){
       ()=>null
     )
   })
+
+  saveCover(coverUrl);
 
   var ncxContent = fs.readFileSync(`./example/OPS/book.ncx`, {encoding: "utf8", flag: "r"});
   var opfContent = fs.readFileSync(`./example/OPS/book.opf`, {encoding: "utf8", flag: "r"});
