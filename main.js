@@ -2,12 +2,14 @@
 
 const fs = require("fs");
 const https = require("https");
+const childProcess = require("child_process");
+const path = require("path");
 
 var normName;
 var ranobeName;
 var coverUrl;
 var description;
-var name = "205424--the-creature";
+var name = "89042--the-crimson-dragon";
 var chaptersAmount;
 
 var chapters = [];
@@ -26,9 +28,12 @@ async function main(){
 
 function saveCover(url){
   var file = fs.createWriteStream(`./${ranobeName}/OPS/images/cover.jpg`);
-  https.get(url, (res) => {
-    res.pipe(file);
-  })
+  return new Promise((response, rej) => {
+    https.get(url, async (res) => {
+      await res.pipe(file);
+      await response();
+    })
+  });
 }
 
 async function getMainData(){
@@ -60,13 +65,18 @@ function fetchContent(){
   fetch(url)
     .then(res => res.json())
     .then(data => {
-      chapters.push(
-        data.data.content.content.map(i => {
-          if(i?.content)
-            return toParagraph(i.content[0].text);
-          return "";
-        }).reduce((t, i) => t + i)
-      );
+      if(typeof data.data.content === 'string'){
+        chapters.push(data.data.content);
+      }
+      else{
+        chapters.push(
+          data.data.content.content.map(i => {
+            if(i?.content)
+              return toParagraph(i.content[0].text);
+            return "";
+          }).reduce((t, i) => t + i)
+        );
+      }
       chapterNames.push(data?.data?.name);
 
       if(i >= chaptersAmount) return endFetch();
@@ -77,9 +87,9 @@ function fetchContent(){
 
 const f=()=>null;
 
-function endFetch(){
+async function endFetch(){
   fs.cpSync("./example", `./${ranobeName}`, { recursive: true })
-
+ 
   chapters.forEach((item, index) => {
     fs.appendFile(
       `./${ranobeName}/OPS/chapter-1-${index+1}.xhtml`,
@@ -88,7 +98,6 @@ function endFetch(){
     )
   })
 
-  saveCover(coverUrl);
 
   var ncxContent = fs.readFileSync(`./example/OPS/book.ncx`, {encoding: "utf8", flag: "r"});
   var opfContent = fs.readFileSync(`./example/OPS/book.opf`, {encoding: "utf8", flag: "r"});
@@ -108,7 +117,14 @@ function endFetch(){
   );
 
   fs.appendFile(`./${ranobeName}/OPS/toc.xhtml`, getTocContent(chapterNames), ()=>null);
+
+
+  var pathToDir = `${__dirname}\\${ranobeName}`
+
+  await saveCover(coverUrl)
+  await childProcess.execSync(`cd ${pathToDir} && zip -r -m ${ranobeName} . && move ./${ranobeName}.zip ./${ranobeName}.epub`);
 }
+
 
 function getNcxContent(ncxContent, chapterNames){
   var content = "";
