@@ -3,8 +3,10 @@
 const fs = require("fs");
 
 //let name = "83851--white-dragon-lord";
-var ranobeName = "the_creature"
-var name = "205424--the-creature"
+var normName;
+var ranobeName;
+var coverUrl;
+var name = "205424--the-creature";
 var chaptersAmount = 20;
 
 var chapters = [];
@@ -14,14 +16,36 @@ const log = console.log;
 
 let i = 0;
 
-fetchContent();
+main();
+async function main(){
+  await getMainData();
+  await getChaptersAmount();
+  fetchContent();
+}
+
+async function getMainData(){
+  await fetch(`https://api.lib.social/api/manga/${name}`)
+    .then(res => res.json())
+    .then(data => {
+      normName = data.data.name;
+      ranobeName = data.data.slug;
+      coverUrl = data.data.cover.default;
+    })
+}
+
+async function getChaptersAmount(){
+  await fetch(`https://api.lib.social/api/manga/${name}/chapters`)
+    .then(res => res.json())
+    .then(data => {
+      chaptersAmount = data.data.length;
+    })
+}
 
 function toParagraph(text){
   return '<p>' + text + '</p>';
 }
 
 function fetchContent(){
-  i += 1;
   const url = `https://api.lib.social/api/manga/${name}/chapter?number=${i}&volume=1`;
   console.log(url)
   fetch(url)
@@ -39,6 +63,7 @@ function fetchContent(){
       if(i >= chaptersAmount) return endFetch();
       else fetchContent();
     })
+  i += 1;
 }
 
 function endFetch(){
