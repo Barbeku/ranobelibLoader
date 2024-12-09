@@ -83,10 +83,14 @@ function fetchContent(){
       }
       chapterNames.push(data?.data?.name);
 
+      i += 1;
       if(i >= chaptersAmount) return endFetch();
       else fetchContent();
     })
-  i += 1;
+    .catch(() => {
+      log("error");
+      fetchContent();
+    })
 }
 
 const f=()=>null;
@@ -126,7 +130,9 @@ async function endFetch(){
   var pathToDir = `${__dirname}\\${ranobeName}`
 
   await saveCover(coverUrl)
-  await childProcess.execSync(`cd ${pathToDir} && zip -r -m ${ranobeName} . && move ./${ranobeName}.zip ./${ranobeName}.epub`);
+  setTimeout(() => {
+    childProcess.execSync(`cd ${pathToDir} && zip -r -m ${ranobeName} . && move ./${ranobeName}.zip ./${ranobeName}.epub`);
+  }, 5000);
 }
 
 
