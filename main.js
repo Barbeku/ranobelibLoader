@@ -6,8 +6,9 @@ const fs = require("fs");
 var normName;
 var ranobeName;
 var coverUrl;
+var description;
 var name = "205424--the-creature";
-var chaptersAmount = 20;
+var chaptersAmount;
 
 var chapters = [];
 var chapterNames = [];
@@ -24,12 +25,13 @@ async function main(){
 }
 
 async function getMainData(){
-  await fetch(`https://api.lib.social/api/manga/${name}`)
+  await fetch(`https://api.lib.social/api/manga/${name}?fields[]=summary`)
     .then(res => res.json())
     .then(data => {
       normName = data.data.name;
       ranobeName = data.data.slug;
       coverUrl = data.data.cover.default;
+      description = data.data.summary;
     })
 }
 
@@ -66,28 +68,40 @@ function fetchContent(){
   i += 1;
 }
 
+const f=()=>null;
+
 function endFetch(){
-//  fs.cpSync("./example", `./${ranobeName}`, { recursive: true })
-//
-//  chapters.forEach((item, index) => {
-//    fs.appendFile(
-//      `./${ranobeName}/OPS/chapter-1-${index+1}.xhtml`,
-//      getChapterStart(chapterNames[index]) + item + defaultChapterEnd,
-//      ()=>null
-//    )
-//  })
-//  fs.readFile('./example/OPS');
+  fs.cpSync("./example", `./${ranobeName}`, { recursive: true })
 
-  var ncxContent = fs.readFile(`/example/OPS/book.ncx`);
-  log(ncxContent);
-//  fs.writeFile(`/${ranobeName}/OPS/book.ncx`, getNcxContent(ncxContent, chapterNames), { encoding: "utf8", flag: "w", ()=>null)
+  chapters.forEach((item, index) => {
+    fs.appendFile(
+      `./${ranobeName}/OPS/chapter-1-${index+1}.xhtml`,
+      getChapterStart(chapterNames[index]) + item + defaultChapterEnd,
+      ()=>null
+    )
+  })
 
-//  fs.appendFile(`./${ranobeName}/OPS/book.ncx`, getNcxContent(chapterNames), ()=>null);
-//  fs.appendFile(`./${ranobeName}/OPS/book.opf`, getOpfContent(chapters.length), ()=>null);
-//  fs.appendFile(`./${ranobeName}/OPS/toc.xhtml`, getTocContent(chapterNames), ()=>null);
+  var ncxContent = fs.readFileSync(`./example/OPS/book.ncx`, {encoding: "utf8", flag: "r"});
+  var opfContent = fs.readFileSync(`./example/OPS/book.opf`, {encoding: "utf8", flag: "r"});
+
+  fs.writeFile(
+    `./${ranobeName}/OPS/book.ncx`,
+    getNcxContent(ncxContent, chapterNames),
+    { encoding: "utf8", flag: "w"},
+    f
+  );
+
+  fs.writeFile(
+    `./${ranobeName}/OPS/book.opf`,
+    getOpfContent(opfContent, chapterNames.length),
+    { encoding: "utf8", flag: "w"},
+    f
+  );
+
+  fs.appendFile(`./${ranobeName}/OPS/toc.xhtml`, getTocContent(chapterNames), ()=>null);
 }
 
-function getNcxContent(chapterNames){
+function getNcxContent(ncxContent, chapterNames){
   var content = "";
 
   for(var i = 0; i < chapterNames.length; i++){
@@ -99,25 +113,24 @@ function getNcxContent(chapterNames){
     </navPoint>`
   }
 
-  content += defaultNcxEnd;
-
-  return content;
+  return ncxContent.replace("TitleName", normName).replace("ContentNcx", content);
 }
 
-function getOpfContent(length){
-  var content = "";
+function getOpfContent(opfContent, length){
+  var chaptersContent = "";
+  var itemrefContent = "";
 
   for(var i = 0; i < length; i++)
-    content += `<item id="chapter${i+3}" href="chapter-1-${i+1}.xhtml" media-type="application/xhtml+xml" />`;
-
-  content += '</manifest> <spine toc="ncx">';
+    chaptersContent += `<item id="chapter${i+3}" href="chapter-1-${i+1}.xhtml" media-type="application/xhtml+xml" />`;
 
   for(var i = 0; i < length+2; i++)
-    content += `<itemref idref="chapter${i+1}" />`;
+    itemrefContent += `<itemref idref="chapter${i+1}" />`;
 
-  content += defaultOpfEnd;
-
-  return content;
+  return opfContent
+          .replace("TitleName", normName)
+          .replace("TitleDescription", description)
+          .replace("ChaptersContent", chaptersContent)
+          .replace("ItemrefContent", itemrefContent)
 }
 
 function getTocContent(chapterNames){
@@ -136,6 +149,5 @@ function getChapterStart(chapterName){
 }
 
 const defaultTocEnd = `</ol></nav></body></html>`
-const defaultNcxEnd = '</navMap></ncx>';
-const defaultOpfEnd =`</spine><guide> <reference type="text" title="Постер" href="customCover.xhtml" /> </guide> </package>`
+
 const defaultChapterEnd = `</body></html>`;

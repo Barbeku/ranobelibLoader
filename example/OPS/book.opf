@@ -1,23 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <package xmlns="http://www.idpf.org/2007/opf"
-	unique-identifier="BookId" version="3.0">
-	<metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
-		<dc:title>TitleName</dc:title>
-		<dc:language>en</dc:language>
-		<dc:identifier id="BookId">14234139-14e2-4c6c-91c3-bff14ac544d2</dc:identifier>
-		<dc:date>2024-04-22T13:05:49.000000+00:00</dc:date>
+  unique-identifier="BookId" version="3.0">
+<metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+  <dc:title>TitleName</dc:title>
+  <dc:language>en</dc:language>
+  <dc:identifier id="BookId">14234139-14e2-4c6c-91c3-bff14ac544d2</dc:identifier>
+  <dc:date>2024-04-22T13:05:49.000000+00:00</dc:date>
 
-		<dc:description>TitleDescription</dc:description>
+  <dc:description>TitleDescription</dc:description>
 
-		<dc:source>https://ranobehub.org:443/</dc:source>
-		<meta property="dcterms:modified">2024-04-22T13:05:49Z</meta>
-		<meta name="cover" content="CoverImage" />
-	</metadata>
+  <dc:source>https://ranobehub.org:443/</dc:source>
+  <meta property="dcterms:modified">2024-04-22T13:05:49Z</meta>
+  <meta name="cover" content="CoverImage" />
+</metadata>
 
-	<manifest>
-		<item id="ncx" href="book.ncx" media-type="application/x-dtbncx+xml" />
-		<item id="css_CoverPageCss" href="Styles/CoverPage.css" media-type="text/css" />
-		<item id="CoverImage" href="images/cover.jpg" media-type="image/jpeg" />
-		<item id="chapter1" href="customCover.xhtml" media-type="application/xhtml+xml" />
-		<item id="toc" href="toc.xhtml" media-type="application/xhtml+xml" properties="nav" />
-		<item id="chapter2" href="volume-0.xhtml" media-type="application/xhtml+xml" />
+<manifest>
+  <item id="ncx" href="book.ncx" media-type="application/x-dtbncx+xml" />
+  <item id="css_CoverPageCss" href="Styles/CoverPage.css" media-type="text/css" />
+  <item id="CoverImage" href="images/cover.jpg" media-type="image/jpeg" />
+  <item id="chapter1" href="customCover.xhtml" media-type="application/xhtml+xml" />
+  <item id="toc" href="toc.xhtml" media-type="application/xhtml+xml" properties="nav" />
+  <item id="chapter2" href="volume-0.xhtml" media-type="application/xhtml+xml" />
+  ChaptersContent
+</manifest> 
+
+<spine toc="ncx">
+  ItemrefContent
+</spine>
+
+<guide>
+  <reference type="text" title="Постер" href="customCover.xhtml" />
+</guide>
+</package>
