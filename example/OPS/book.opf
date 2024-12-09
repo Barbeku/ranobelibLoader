@@ -2,17 +2,13 @@
 <package xmlns="http://www.idpf.org/2007/opf"
 	unique-identifier="BookId" version="3.0">
 	<metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
-		<dc:title>Поднятие уровня в одиночку/ Solo Leveling</dc:title>
+		<dc:title>TitleName</dc:title>
 		<dc:language>en</dc:language>
 		<dc:identifier id="BookId">14234139-14e2-4c6c-91c3-bff14ac544d2</dc:identifier>
 		<dc:date>2024-04-22T13:05:49.000000+00:00</dc:date>
-		<dc:description>10 лет назад, после того, как «Врата», соединившие реальный мир с параллельным, открылись, некоторые из  людей получили силу охотиться на монстров внутри «Врат». Они известны как «Охотники».
 
-Меня зовут Сон Джин Ву, охотник E-ранга. Я тот, кто рискует своей жизнью в самых низких уровнях подземелья. Не имея никаких сверхсильных навыков, я едва зарабатывал деньги, по крайней мере, пока я не нашел одно необычное подземелье.
+		<dc:description>TitleDescription</dc:description>
 
-В конце концов, я умер ... и внезапно получил странную силу.
-
-</dc:description>
 		<dc:source>https://ranobehub.org:443/</dc:source>
 		<meta property="dcterms:modified">2024-04-22T13:05:49Z</meta>
 		<meta name="cover" content="CoverImage" />

@@ -67,19 +67,24 @@ function fetchContent(){
 }
 
 function endFetch(){
-  fs.cpSync("./example", `./${ranobeName}`, { recursive: true })
+//  fs.cpSync("./example", `./${ranobeName}`, { recursive: true })
+//
+//  chapters.forEach((item, index) => {
+//    fs.appendFile(
+//      `./${ranobeName}/OPS/chapter-1-${index+1}.xhtml`,
+//      getChapterStart(chapterNames[index]) + item + defaultChapterEnd,
+//      ()=>null
+//    )
+//  })
+//  fs.readFile('./example/OPS');
 
-  chapters.forEach((item, index) => {
-    fs.appendFile(
-      `./${ranobeName}/OPS/chapter-1-${index+1}.xhtml`,
-      getChapterStart(chapterNames[index]) + item + defaultChapterEnd,
-      ()=>null
-    )
-  })
+  var ncxContent = fs.readFile(`/example/OPS/book.ncx`);
+  log(ncxContent);
+//  fs.writeFile(`/${ranobeName}/OPS/book.ncx`, getNcxContent(ncxContent, chapterNames), { encoding: "utf8", flag: "w", ()=>null)
 
-  fs.appendFile(`./${ranobeName}/OPS/book.ncx`, getNcxContent(chapterNames), ()=>null);
-  fs.appendFile(`./${ranobeName}/OPS/book.opf`, getOpfContent(chapters.length), ()=>null);
-  fs.appendFile(`./${ranobeName}/OPS/toc.xhtml`, getTocContent(chapterNames), ()=>null);
+//  fs.appendFile(`./${ranobeName}/OPS/book.ncx`, getNcxContent(chapterNames), ()=>null);
+//  fs.appendFile(`./${ranobeName}/OPS/book.opf`, getOpfContent(chapters.length), ()=>null);
+//  fs.appendFile(`./${ranobeName}/OPS/toc.xhtml`, getTocContent(chapterNames), ()=>null);
 }
 
 function getNcxContent(chapterNames){
