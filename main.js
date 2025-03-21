@@ -5,11 +5,14 @@ const https = require("https");
 const childProcess = require("child_process");
 const path = require("path");
 
+var name = fs.readFileSync(`./title.txt`, {encoding: "utf8", flag: "r"});
+console.log(name)
+
 var normName;
 var ranobeName;
 var coverUrl;
 var description;
-var name = "38728--supreme-magus";
+//var name = "81842--vampire-overlord-system-in-the-apocalypse";
 var chaptersAmount;
 
 var chaptersUrl = [];
@@ -48,6 +51,7 @@ async function getMainData(){
     })
 }
 
+let chaptersPos = 1;
 async function getChaptersAmount(){
   await fetch(`https://api.lib.social/api/manga/${name}/chapters`)
     .then(res => res.json())
@@ -63,6 +67,8 @@ function toParagraph(text){
   return '<p>' + text + '</p>';
 }
 
+
+let count = 0;
 function fetchContent(){
   const url = chaptersUrl[i]; 
   console.log(url)
@@ -77,11 +83,11 @@ function fetchContent(){
           data.data.content.content.map(i => {
             if(i?.content)
               return toParagraph(i.content[0].text);
-            return "";
+            return           
           }).reduce((t, i) => t + i)
         );
       }
-      chapterNames.push(data?.data?.name);
+      chapterNames.push(String(count++) + ". " + data?.data?.name);
 
       i += 1;
       if(i >= chaptersAmount) return endFetch();
@@ -89,7 +95,7 @@ function fetchContent(){
     })
     .catch(() => {
       log("error");
-      fetchContent();
+      setTimeout(fetchContent, 3000);
     })
 }
 
@@ -130,9 +136,9 @@ async function endFetch(){
   var pathToDir = `${__dirname}\\${ranobeName}`
 
   await saveCover(coverUrl)
-  setTimeout(() => {
-    childProcess.execSync(`cd ${pathToDir} && zip -r -m ${ranobeName} . && move ./${ranobeName}.zip ./${ranobeName}.epub`);
-  }, 5000);
+//  setTimeout(() => {
+//    childProcess.execSync(`cd ${pathToDir} && zip -r -m ${ranobeName} . && move ./${ranobeName}.zip ./${ranobeName}.epub`);
+//  }, 5000);
 }
 
 
