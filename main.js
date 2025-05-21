@@ -5,7 +5,8 @@ const https = require("https");
 const childProcess = require("child_process");
 const path = require("path");
 
-var name = fs.readFileSync(`./title.txt`, {encoding: "utf8", flag: "r"});
+var name = "59274--ot-smertnogo-do-boga-kuznica-bogov"
+var name = "194584--pererozdenie-v-raba"
 console.log(name)
 
 var normName;
@@ -27,17 +28,8 @@ main();
 async function main(){
   await getMainData();
   await getChaptersAmount();
-  fetchContent();
-}
-
-function saveCover(url){
-  var file = fs.createWriteStream(`./${ranobeName}/OPS/images/cover.jpg`);
-  return new Promise((response, rej) => {
-    https.get(url, async (res) => {
-      await res.pipe(file);
-      await response();
-    })
-  });
+  await fetchContent();
+  await endFetch();
 }
 
 async function getMainData(){
@@ -67,12 +59,11 @@ function toParagraph(text){
   return '<p>' + text + '</p>';
 }
 
-
 let count = 0;
 function fetchContent(){
   const url = chaptersUrl[i]; 
   console.log(url)
-  fetch(url)
+  return fetch(url)
     .then(res => res.json())
     .then(data => {
       if(typeof data.data.content === 'string'){
@@ -90,8 +81,8 @@ function fetchContent(){
       chapterNames.push(String(count++) + ". " + data?.data?.name);
 
       i += 1;
-      if(i >= chaptersAmount) return endFetch();
-      else fetchContent();
+      if(i >= chaptersAmount) return;
+      else return fetchContent();
     })
     .catch(() => {
       log("error");
@@ -101,46 +92,62 @@ function fetchContent(){
 
 const f=()=>null;
 
+//  var file = fs.createWriteStream(');
+async function saveCover(){
+  return new Promise((resolve, reject) => {
+    https.get(coverUrl, (response) => {
+      if (response.statusCode !== 200) {
+        reject(new Error(`Ошибка HTTP: ${response.statusCode}`));
+        return;
+      }
+
+      const fileStream = fs.createWriteStream('./novel/OPS/images/cover.jpg');
+      response.pipe(fileStream);
+
+      fileStream.on('finish', () => {
+        fileStream.close();
+        resolve('Изображение успешно загружено и сохранено как image.png');
+      });
+    })
+  });
+}
+
+
 async function endFetch(){
-  fs.cpSync("./example", `./${ranobeName}`, { recursive: true })
+  await fs.cpSync("./example", `./novel`, { recursive: true })
  
-  chapters.forEach((item, index) => {
-    fs.appendFile(
-      `./${ranobeName}/OPS/chapter-1-${index+1}.xhtml`,
+  chapters.forEach(async (item, index) => {
+    await fs.appendFileSync(
+      `./novel/OPS/chapter-1-${index+1}.xhtml`,
       getChapterStart(chapterNames[index]) + item + defaultChapterEnd,
       ()=>null
     )
   })
 
+  var ncxContent = await fs.readFileSync(`./example/OPS/book.ncx`, {encoding: "utf8", flag: "r"});
+  var opfContent = await fs.readFileSync(`./example/OPS/book.opf`, {encoding: "utf8", flag: "r"});
 
-  var ncxContent = fs.readFileSync(`./example/OPS/book.ncx`, {encoding: "utf8", flag: "r"});
-  var opfContent = fs.readFileSync(`./example/OPS/book.opf`, {encoding: "utf8", flag: "r"});
-
-  fs.writeFile(
-    `./${ranobeName}/OPS/book.ncx`,
+  await fs.writeFileSync(
+    `./novel/OPS/book.ncx`,
     getNcxContent(ncxContent, chapterNames),
-    { encoding: "utf8", flag: "w"},
-    f
+    { encoding: "utf8", flag: "w"}, f
   );
 
-  fs.writeFile(
-    `./${ranobeName}/OPS/book.opf`,
+  await fs.writeFileSync(
+    `./novel/OPS/book.opf`,
     getOpfContent(opfContent, chapterNames.length),
-    { encoding: "utf8", flag: "w"},
-    f
+    { encoding: "utf8", flag: "w"}, f
   );
 
-  fs.appendFile(`./${ranobeName}/OPS/toc.xhtml`, getTocContent(chapterNames), ()=>null);
+  await fs.appendFileSync(`./novel/OPS/toc.xhtml`, getTocContent(chapterNames), ()=>null)
 
+  var pathToDir = `${__dirname}\\novel`
 
-  var pathToDir = `${__dirname}\\${ranobeName}`
-
-  await saveCover(coverUrl)
-//  setTimeout(() => {
-//    childProcess.execSync(`cd ${pathToDir} && zip -r -m ${ranobeName} . && move ./${ranobeName}.zip ./${ranobeName}.epub`);
-//  }, 5000);
+  console.log(1)
+  saveCover().then(() => {
+    childProcess.execSync(`cd ${pathToDir} && zip -r -m novel . && move ./novel.zip ./${ranobeName}.epub`);
+  })
 }
-
 
 function getNcxContent(ncxContent, chapterNames){
   var content = "";
@@ -176,10 +183,8 @@ function getOpfContent(opfContent, length){
 
 function getTocContent(chapterNames){
   var content = "";
-
   for(var i = 0; i < chapterNames.length; i++)
     content += `<li class='level1'><a href="chapter-1-${i+1}">${chapterNames[i]}</a></li>`
-
   content += defaultTocEnd;
 
   return content;
@@ -190,5 +195,4 @@ function getChapterStart(chapterName){
 }
 
 const defaultTocEnd = `</ol></nav></body></html>`
-
 const defaultChapterEnd = `</body></html>`;
