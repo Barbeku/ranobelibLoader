@@ -5,8 +5,7 @@ const https = require("https");
 const childProcess = require("child_process");
 const path = require("path");
 
-var name = "59274--ot-smertnogo-do-boga-kuznica-bogov"
-var name = "194584--pererozdenie-v-raba"
+var name = "38728--supreme-magus"
 console.log(name)
 
 var normName;
@@ -86,7 +85,7 @@ function fetchContent(){
     })
     .catch(() => {
       log("error");
-      setTimeout(fetchContent, 3000);
+      return fetchContent()
     })
 }
 
